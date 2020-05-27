@@ -1,6 +1,6 @@
 package db
 
-type Where struct {
+type where struct {
 	join    string // and or
 	combine string // and or
 	item    []string

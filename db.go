@@ -17,7 +17,7 @@ type Db struct {
 	master  *table
 	slave   map[string]*table
 	field   *field
-	where   []*Where
+	where   []*where
 	order   string
 	group   string
 	have    string
@@ -70,7 +70,7 @@ func (d *Db) JoinName(tableName string, on string, args ...interface{}) *Db {
 	return d
 }
 
-// ==============================Where===========================
+// ==============================where===========================
 func (d *Db) Where(query string, args ...interface{}) *Db {
 	return d.wherefFormat("and", "and", query, args...)
 }
@@ -80,7 +80,7 @@ func (d *Db) WhereOr(query string, args ...interface{}) *Db {
 func (d *Db) wherefFormat(left string, inner string, query string, args ...interface{}) *Db {
 	buf := d.FormatMarkStr(query, args...)
 	//
-	whereItem := &Where{join: left, combine: inner, item: make([]string, 0)}
+	whereItem := &where{join: left, combine: inner, item: make([]string, 0)}
 	whereItem.item = append(whereItem.item, buf)
 	d.where = append(d.where, whereItem)
 	return d
@@ -686,7 +686,7 @@ func (d *Db) Init() *Db {
 		field: &field{
 			item: make([]*fieldItem, 0),
 		},
-		where: make([]*Where, 0),
+		where: make([]*where, 0),
 		db:    make([]*sql.DB, 0),
 	}
 	return d
@@ -709,7 +709,7 @@ func (d *Db) newQuery() *Db {
 	db.field = &field{
 		item: make([]*fieldItem, 0),
 	}
-	db.where = make([]*Where, 0)
+	db.where = make([]*where, 0)
 	db.order = ""
 	db.group = ""
 	db.have = ""
