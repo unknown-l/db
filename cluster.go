@@ -25,6 +25,7 @@ func NewCluster(dbsMap map[string][]string) (*Cluster, error) {
 			}
 			instance.db = append(instance.db, db)
 		}
+		instance.Init()
 		c.db[dbKey] = &instance
 	}
 	return c, nil
