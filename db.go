@@ -115,6 +115,26 @@ func (d *Db) Find() error {
 	d.setScanItemValue(values)
 	return nil
 }
+
+/**
+如果查询单个没有
+是一个正常的错误时使用
+不在单个处理
+*/
+func (d *Db) Get() error {
+	d.limit = "1"
+	query := d.Sql()
+	row := d.QueryRow(query)
+	values := d.scanArr()
+	if err := row.Scan(values...); err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		}
+		return err
+	}
+	d.setScanItemValue(values)
+	return nil
+}
 func (d *Db) Count(count *int32) error {
 	//  限制
 	d.order = ""
