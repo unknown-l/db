@@ -652,6 +652,8 @@ func (d *Db) scanArr() []interface{} {
 			scanVal[fieldKey] = &sql.NullString{}
 		} else if fieldKind == "float64" {
 			scanVal[fieldKey] = &sql.NullFloat64{}
+		} else if fieldKind == "int64" {
+			scanVal[fieldKey] = &sql.NullInt64{}
 		}
 	}
 	return scanVal
