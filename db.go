@@ -221,6 +221,8 @@ func (d *Db) Column(field string, result interface{}) error {
 			resultItem = &sql.NullString{}
 		} else if itemType.Name() == "float" {
 			resultItem = &sql.NullFloat64{}
+		} else if itemType.Name() == "int64" {
+			resultItem = &sql.NullInt64{}
 		}
 		if err = rows.Scan(resultItem); err != nil {
 			return err
@@ -232,6 +234,8 @@ func (d *Db) Column(field string, result interface{}) error {
 			itemValue.Set(reflect.ValueOf(resultItem.(*sql.NullString).String))
 		} else if itemType.Name() == "float64" && resultItem.(*sql.NullFloat64).Valid {
 			itemValue.Set(reflect.ValueOf(resultItem.(*sql.NullFloat64).Float64))
+		} else if itemType.Name() == "int64" && resultItem.(*sql.NullInt64).Valid {
+			itemValue.Set(reflect.ValueOf(resultItem.(*sql.NullInt64).Int64))
 		}
 		arrValue.Set(reflect.Append(arrValue, itemValue))
 	}
@@ -415,6 +419,8 @@ func (d *Db) insertSql() string {
 				valCol = append(valCol, fmt.Sprintf("'%s'", objVal[columnName].value.Interface()))
 			} else if objVal[columnName].kind == "float64" {
 				valCol = append(valCol, fmt.Sprintf("%f", objVal[columnName].value.Interface()))
+			} else if objVal[columnName].kind == "int64" {
+				valCol = append(valCol, fmt.Sprintf("%d", objVal[columnName].value.Interface()))
 			}
 		}
 		valRow = append(valRow, fmt.Sprintf("(%s)", strings.Join(valCol, ",")))
@@ -437,6 +443,8 @@ func (d *Db) updateSql() string {
 				column = append(column, fmt.Sprintf("%s.%s='%s'", d.master.alias, objItemKey, objItemVal.value.Interface()))
 			} else if objItemVal.kind == "float64" && !objItemVal.value.IsZero() {
 				column = append(column, fmt.Sprintf("%s.%s=%f", d.master.alias, objItemKey, objItemVal.value.Interface()))
+			} else if objItemVal.kind == "int64" && !objItemVal.value.IsZero() {
+				column = append(column, fmt.Sprintf("%s.%s=%d", d.master.alias, objItemKey, objItemVal.value.Interface()))
 			}
 		}
 	}
@@ -577,6 +585,10 @@ func (d *Db) setScanItemValue(value []interface{}) {
 			if value[fieldKey].(*sql.NullFloat64).Valid {
 				reflect.ValueOf(table.obj).Elem().FieldByName(table.column[fieldItem.name].className).Set(reflect.ValueOf(value[fieldKey].(*sql.NullFloat64).Float64))
 			}
+		} else if table.column[fieldItem.name].kind == "int64" {
+			if value[fieldKey].(*sql.NullInt64).Valid {
+				reflect.ValueOf(table.obj).Elem().FieldByName(table.column[fieldItem.name].className).Set(reflect.ValueOf(value[fieldKey].(*sql.NullInt64).Int64))
+			}
 		}
 	}
 }
@@ -624,6 +636,10 @@ func (d *Db) setScanArrValue(value []interface{}) {
 		} else if table.column[fieldItem.name].kind == "float64" {
 			if value[fieldKey].(*sql.NullFloat64).Valid {
 				table.itemValue.FieldByName(table.column[fieldItem.name].className).Set(reflect.ValueOf(value[fieldKey].(*sql.NullFloat64).Float64))
+			}
+		} else if table.column[fieldItem.name].kind == "int64" {
+			if value[fieldKey].(*sql.NullInt64).Valid {
+				table.itemValue.FieldByName(table.column[fieldItem.name].className).Set(reflect.ValueOf(value[fieldKey].(*sql.NullInt64).Int64))
 			}
 		}
 	}
