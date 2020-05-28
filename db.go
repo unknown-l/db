@@ -47,6 +47,16 @@ func (d *Db) Join(m interface{}, on string, args ...interface{}) *Db {
 	d.slave[slave.alias] = slave
 	return d
 }
+func (d *Db) InnerJoin(m interface{}, on string, args ...interface{}) *Db {
+	slave := &table{column: map[string]*column{}}
+	slave.alias = fmt.Sprintf("%s", tableSlaveAlias[len(d.slave)])
+	slave.join = "inner join"
+	slave.obj = m
+	slave.on = d.FormatMarkStr(on, args...)
+	d.reflectColumn(slave, m)
+	d.slave[slave.alias] = slave
+	return d
+}
 
 /* 例如需要从user查询数据到统计对象TableName(&count{}, "user") */
 func (d *Db) TableName(m interface{}, tableName string) *Db {
