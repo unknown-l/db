@@ -71,3 +71,13 @@ func (c *Cluster) Close() error {
 func (c *Cluster) Context(ctx context.Context) *Cluster {
 	return ctx.Value(Ctx).(*Cluster)
 }
+
+// Clone
+func (c *Cluster) CloneNew() *Cluster {
+	newCluster := Cluster{db: make(map[string]*Db, 0)}
+	for dbKey, db := range c.db {
+		newCluster.db[dbKey] = db
+		newCluster.db[dbKey].Init()
+	}
+	return &newCluster
+}

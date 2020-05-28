@@ -688,6 +688,7 @@ func (d *Db) Init() *Db {
 		},
 		where: make([]*where, 0),
 		db:    make([]*sql.DB, 0),
+		dbTx:  nil,
 	}
 	return d
 }
