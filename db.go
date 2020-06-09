@@ -623,7 +623,11 @@ func (d *Db) setScanArrValue(value []interface{}) {
 		if fieldItem.alias == tableMasterAlias {
 			table = d.master
 		} else {
-			table = d.slave[fieldItem.alias]
+			if len(d.slave[fieldItem.alias].column) == 0 {
+				table = d.master
+			} else {
+				table = d.slave[fieldItem.alias]
+			}
 		}
 		if table.column[fieldItem.name].kind == "int32" {
 			if value[fieldKey].(*sql.NullInt32).Valid {
@@ -660,7 +664,11 @@ func (d *Db) scanArr() []interface{} {
 		if field.alias == tableMasterAlias {
 			fieldKind = d.master.column[field.name].kind
 		} else {
-			fieldKind = d.slave[field.alias].column[field.name].kind
+			if fieldKindColumn, ok := d.slave[field.alias].column[field.name]; ok {
+				fieldKind = fieldKindColumn.kind
+			} else {
+				fieldKind = d.master.column[field.name].kind
+			}
 		}
 		if fieldKind == "int32" {
 			scanVal[fieldKey] = &sql.NullInt32{}
