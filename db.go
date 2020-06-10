@@ -520,6 +520,10 @@ func (d *Db) FormatMarkStr(query string, args ...interface{}) string {
 				buf = append(buf, InFloat64(arg.([]float64))[0:]...)
 			} else if argsValueType == reflect.String {
 				buf = append(buf, InString(arg.([]string))[0:]...)
+			} else if argsValueType == reflect.Int64 {
+				buf = append(buf, InInt64(arg.([]int64))[0:]...)
+			} else if argsValueType == reflect.Int {
+				buf = append(buf, InInt(arg.([]int))[0:]...)
 			}
 			buf = append(buf, ')')
 		}
