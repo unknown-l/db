@@ -189,7 +189,7 @@ func (d *Db) Sum(field string, sum interface{}) error {
 	return nil
 }
 func (d *Db) PageCount(total *int32) error {
-	err := d.QueryRow("SELECT FOUND_ROWS()").Scan(&total)
+	err := d.QueryRow("SELECT FOUND_ROWS()").Scan(total)
 	return err
 }
 func (d *Db) Page(page int32, limit int32, total *int32) error {
