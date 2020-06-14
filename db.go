@@ -800,13 +800,17 @@ func (d *Db) StartTrans() error {
 }
 func (d *Db) Commit() error {
 	if d.IsTrans() {
-		return d.dbTx.Commit()
+		err := d.dbTx.Commit()
+		d.dbTx = nil
+		return err
 	}
 	return nil
 }
 func (d *Db) Rollback() error {
 	if d.IsTrans() {
-		return d.dbTx.Rollback()
+		err := d.dbTx.Rollback()
+		d.dbTx = nil
+		return err
 	}
 	return nil
 }
