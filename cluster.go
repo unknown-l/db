@@ -74,10 +74,10 @@ func (c *Cluster) Context(ctx context.Context) *Cluster {
 
 // Clone
 func (c *Cluster) CloneNew() *Cluster {
-	newCluster := Cluster{db: make(map[string]*Db, 0)}
+	newCluster := &Cluster{db: make(map[string]*Db, 0)}
 	for dbKey, db := range c.db {
-		newCluster.db[dbKey] = db
-		newCluster.db[dbKey].Init()
+		newCluster.db[dbKey] = db.Init()
+		newCluster.db[dbKey].db = db.db
 	}
-	return &newCluster
+	return newCluster
 }
