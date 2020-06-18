@@ -439,8 +439,9 @@ func (d *Db) updateSql() string {
 	query := make([]string, 0)
 	// 获取有值的column和value
 	column := make([]string, 0)
-	for _, objVal := range d.master.objVal {
-		for objItemKey, objItemVal := range objVal {
+	// 看field有没有传值，传值了更新field里的字段，没有传更新非空值
+	if len(d.field.item) == 0 {
+		for objItemKey, objItemVal := range d.master.column {
 			if objItemVal.kind == "int32" && !objItemVal.value.IsZero() {
 				column = append(column, fmt.Sprintf("%s.%s=%d", d.master.alias, objItemKey, objItemVal.value.Interface()))
 			} else if objItemVal.kind == "string" && !objItemVal.value.IsZero() {
@@ -451,7 +452,23 @@ func (d *Db) updateSql() string {
 				column = append(column, fmt.Sprintf("%s.%s=%d", d.master.alias, objItemKey, objItemVal.value.Interface()))
 			}
 		}
+		//for _, objVal := range d.master.objVal {
+		//
+		//}
+	} else {
+		for _, field := range d.field.item {
+			if d.master.column[field.name].kind == "int32" {
+				column = append(column, fmt.Sprintf("%s.%s=%d", d.master.alias, field.name, d.master.column[field.name].value.Interface()))
+			} else if d.master.column[field.name].kind == "string" {
+				column = append(column, fmt.Sprintf("%s.%s='%s'", d.master.alias, field.name, d.master.column[field.name].value.Interface()))
+			} else if d.master.column[field.name].kind == "float64" {
+				column = append(column, fmt.Sprintf("%s.%s=%f", d.master.alias, field.name, d.master.column[field.name].value.Interface()))
+			} else if d.master.column[field.name].kind == "int64" {
+				column = append(column, fmt.Sprintf("%s.%s=%d", d.master.alias, field.name, d.master.column[field.name].value.Interface()))
+			}
+		}
 	}
+
 	// deleteTmp
 	query = append(query, fmt.Sprintf(updateTmp, d.master.name, d.master.alias, strings.Join(column, ",")))
 	// where
