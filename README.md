@@ -47,12 +47,12 @@ err := cluster.Db("db1").Table(&user).Filed("a.name,b.name").
 - 查询单个值 ( select one row one column value )
 ```go
 name := ""
-err := tool.Db.Db("db1").Table(&User{}).Where("id=1").Value("name", &name)
+err := cluster.Db("db1").Table(&User{}).Where("id=1").Value("name", &name)
 ```
 - 查询单个列的多个值 ( select multiple rows one column value )
 ```go
 name := make([]string, 0)
-err := tool.Db.Db("db1").Table(&User{}).Where("id=1").Column("name", &name)
+err := cluster.Db("db1").Table(&User{}).Where("id=1").Column("name", &name)
 ```
 - 新增单条记录 ( insert one record )
 ```go
