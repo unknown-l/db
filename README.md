@@ -61,6 +61,20 @@ err := cluster.Db("db1").Table(&User{}).Where("id=1").Value("name", &name)
 name := make([]string, 0)
 err := cluster.Db("db1").Table(&User{}).Where("id=1").Column("name", &name)
 ```
+- Group Order
+```go
+err := cluster.Db("db1").Table(&User{}).Filed("name").Group("role_id").Order("id desc", "name asc").Select()
+```
+- 统计数量 ( count )
+```go
+var total int32 = 0
+err := cluster.Db("db1").Table(&User{}).Where("id=1").Count(&total)
+```
+- 求和 ( sum )
+```go
+var total int32 = 0
+err := cluster.Db("db1").Table(&User{}).Where("id=1").Sum("id", &total)
+```
 - 新增单条记录 ( insert one record )
 ```go
 user := User{Name: "username"}
