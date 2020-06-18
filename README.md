@@ -1,4 +1,11 @@
 # 支持mysql的数据库工具
+- 说明
+```
+- 支持集群
+- 支持读写分离
+- 支持事务
+- 支持protobuf
+```
 - 安装 ( install )
 ```go
 import "github.com/unknown-l/db"
@@ -73,4 +80,15 @@ recordCount, err := cluster.Db("db1").Table(&user).Where("id=?", user.Id).Update
 ```go
 user := User{Id: 1, Name: ""}
 recordCount, err := cluster.Db("db1").Table(&user).Filed("name").Where("id=?", user.Id).Update()
+```
+- 删除 - ( delete )
+```go
+recordCount, err := tool.Db.Db("db1").Table(&User{}).Where("id=1").Delete()
+```
+- 事务 ( transaction )
+```go
+user := User{Name: "username"}
+_ = tool.Db.Db("db1").StartTrans()
+_, err := tool.Db.Db("db1").Table(&user).Insert()
+_ = tool.Db.Done(err)
 ```
