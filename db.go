@@ -535,7 +535,7 @@ func (d *Db) FormatMarkStr(query string, args ...interface{}) string {
 		} else if argsTypeOf.Kind() == reflect.Slice {
 			argsValueType := argsTypeOf.Elem().Kind()
 			buf = append(buf, '(')
-			if argsValueType == reflect.Int32 || argsValueType == reflect.Int64 || argsValueType == reflect.Int {
+			if argsValueType == reflect.Int32 {
 				buf = append(buf, InInt32(arg.([]int32))[0:]...)
 			} else if argsValueType == reflect.Float64 {
 				buf = append(buf, InFloat64(arg.([]float64))[0:]...)
