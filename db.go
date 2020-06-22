@@ -596,7 +596,11 @@ func (d *Db) setScanItemValue(value []interface{}) {
 		if fieldItem.alias == tableMasterAlias {
 			table = d.master
 		} else {
-			table = d.slave[fieldItem.alias]
+			if len(d.slave[fieldItem.alias].column) == 0 {
+				table = d.master
+			} else {
+				table = d.slave[fieldItem.alias]
+			}
 		}
 		if table.column[fieldItem.name].kind == "int32" {
 			if value[fieldKey].(*sql.NullInt32).Valid {
