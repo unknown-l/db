@@ -348,9 +348,14 @@ func (d *Db) selectSql() string {
 	// master and field
 	query = append(query, fmt.Sprintf(selectTmp, d.field.string, d.master.name, d.master.alias))
 	// join
-	joinArr := make([]string, 0)
-	for _, slave := range d.slave {
-		joinArr = append(joinArr, fmt.Sprintf(joinTmp, slave.join, slave.name, slave.alias, slave.on))
+	// 优化,map顺序随机，无法保证join依赖顺序，不能直接range d.slave
+	slaveLen := len(d.slave)
+	joinArr := make([]string, slaveLen)
+	for aliasKey, alias := range tableSlaveAlias {
+		if aliasKey >= slaveLen {
+			break
+		}
+		joinArr[aliasKey] = fmt.Sprintf(joinTmp, d.slave[alias].join, d.slave[alias].name, d.slave[alias].alias, d.slave[alias].on)
 	}
 	// slave
 	if len(joinArr) != 0 {
