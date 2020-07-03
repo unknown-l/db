@@ -195,12 +195,12 @@ func (d *Db) PageCount(total *int32) error {
 func (d *Db) Page(page int32, limit int32, total *int32) error {
 	// 查询列表
 	d.limit = fmt.Sprintf("%d,%d", (page-1)*limit, limit)
-	d.field.string = "SQL_CALC_FOUND_ROWS " + d.field.string
+	//d.field.string = "SQL_CALC_FOUND_ROWS " + d.field.string
 	if err := d.Select(); err != nil {
 		return err
 	}
 	// 查询数量
-	if err := d.PageCount(total); err != nil {
+	if err := d.Count(total); err != nil {
 		return err
 	}
 	return nil
