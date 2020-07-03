@@ -163,11 +163,11 @@ func (d *Db) Count(count *int32) error {
 }
 func (d *Db) Sum(field string, sum interface{}) error {
 	//  限制
-	d.field.Set(fmt.Sprintf("sum(%s)", field))
+	d.field.Set(fmt.Sprintf("%s", field))
 	d.order = ""
 	d.limit = ""
 	// 查询
-	query := d.Sql()
+	query := fmt.Sprintf("SELECT sum(%s) FROM (%s) a", field, d.Sql())
 	// 反射
 	sumVal := reflect.ValueOf(sum)
 	sumType := sumVal.Elem().Type().Name()
