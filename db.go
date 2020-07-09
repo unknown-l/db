@@ -843,10 +843,15 @@ func (d *Db) Rollback() error {
 
 /* 查询 */
 func (d *Db) QueryRow(query string, args ...interface{}) *sql.Row {
-
+	if d.IsTrans() {
+		return d.dbTx.QueryRow(query, args...)
+	}
 	return d.Slave().QueryRow(query, args...)
 }
 func (d *Db) Query(query string, args ...interface{}) (*sql.Rows, error) {
+	if d.IsTrans() {
+		return d.dbTx.Query(query, args...)
+	}
 	return d.Slave().Query(query, args...)
 }
 
