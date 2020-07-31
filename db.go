@@ -457,19 +457,26 @@ func (d *Db) updateSql() string {
 				column = append(column, fmt.Sprintf("%s.%s=%d", d.master.alias, objItemKey, objItemVal.value.Interface()))
 			}
 		}
-		//for _, objVal := range d.master.objVal {
-		//
-		//}
 	} else {
 		for _, field := range d.field.item {
-			if d.master.column[field.name].kind == "int32" {
-				column = append(column, fmt.Sprintf("%s.%s=%d", d.master.alias, field.name, d.master.column[field.name].value.Interface()))
+			if d.master.column[field.name].kind == "int32" || d.master.column[field.name].kind == "int64" {
+				if d.master.column[field.name].value.IsZero() {
+					column = append(column, fmt.Sprintf("%s.%s=%d", d.master.alias, field.name, 0))
+				} else {
+					column = append(column, fmt.Sprintf("%s.%s=%d", d.master.alias, field.name, d.master.column[field.name].value.Interface()))
+				}
 			} else if d.master.column[field.name].kind == "string" {
-				column = append(column, fmt.Sprintf("%s.%s='%s'", d.master.alias, field.name, d.master.column[field.name].value.Interface()))
+				if d.master.column[field.name].value.IsZero() {
+					column = append(column, fmt.Sprintf("%s.%s='%s'", d.master.alias, field.name, ""))
+				} else {
+					column = append(column, fmt.Sprintf("%s.%s='%s'", d.master.alias, field.name, d.master.column[field.name].value.Interface()))
+				}
 			} else if d.master.column[field.name].kind == "float64" {
-				column = append(column, fmt.Sprintf("%s.%s=%f", d.master.alias, field.name, d.master.column[field.name].value.Interface()))
-			} else if d.master.column[field.name].kind == "int64" {
-				column = append(column, fmt.Sprintf("%s.%s=%d", d.master.alias, field.name, d.master.column[field.name].value.Interface()))
+				if d.master.column[field.name].value.IsZero() {
+					column = append(column, fmt.Sprintf("%s.%s=%f", d.master.alias, field.name, 0))
+				} else {
+					column = append(column, fmt.Sprintf("%s.%s=%f", d.master.alias, field.name, d.master.column[field.name].value.Interface()))
+				}
 			}
 		}
 	}
