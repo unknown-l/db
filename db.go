@@ -473,7 +473,7 @@ func (d *Db) updateSql() string {
 				}
 			} else if d.master.column[field.name].kind == "float64" {
 				if d.master.column[field.name].value.IsZero() {
-					column = append(column, fmt.Sprintf("%s.%s=%f", d.master.alias, field.name, 0))
+					column = append(column, fmt.Sprintf("%s.%s=%d", d.master.alias, field.name, 0))
 				} else {
 					column = append(column, fmt.Sprintf("%s.%s=%f", d.master.alias, field.name, d.master.column[field.name].value.Interface()))
 				}
