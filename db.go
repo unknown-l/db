@@ -517,6 +517,10 @@ func (d *Db) Order(order ...string) *Db {
 	d.order = strings.Join(order, ",")
 	return d
 }
+func (d *Db) Limit(limit string) *Db {
+	d.limit = limit
+	return d
+}
 func (d *Db) Filed(filed string) *Db {
 	d.field.Set(filed)
 	return d
