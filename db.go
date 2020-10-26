@@ -14,17 +14,18 @@ const commandUpdate = "update"
 const commandDelete = "delete"
 
 type Db struct {
-	master  *table
-	slave   map[string]*table
-	field   *field
-	where   []*where
-	order   string
-	group   string
-	have    string
-	limit   string
-	command string
-	db      []*sql.DB
-	dbTx    *sql.Tx
+	master     *table
+	slave      map[string]*table
+	field      *field
+	where      []*where
+	order      string
+	group      string
+	have       string
+	limit      string
+	command    string
+	db         []*sql.DB
+	dbTx       *sql.Tx
+	userMaster bool
 }
 
 // ==============================初始化表格===========================
@@ -796,6 +797,10 @@ func (d *Db) Init() *Db {
 func (d *Db) Master() *sql.DB {
 	return d.db[0]
 }
+func (d *Db) UseMaster() *Db {
+	d.userMaster = true
+	return d
+}
 func (d *Db) Slave() *sql.DB {
 	return d.db[len(d.db)-1]
 }
@@ -817,6 +822,7 @@ func (d *Db) newQuery() *Db {
 	db.have = ""
 	db.limit = ""
 	db.command = ""
+	db.userMaster = false
 	return &db
 }
 
@@ -857,11 +863,17 @@ func (d *Db) QueryRow(query string, args ...interface{}) *sql.Row {
 	if d.IsTrans() {
 		return d.dbTx.QueryRow(query, args...)
 	}
+	if d.userMaster {
+		return d.Master().QueryRow(query, args...)
+	}
 	return d.Slave().QueryRow(query, args...)
 }
 func (d *Db) Query(query string, args ...interface{}) (*sql.Rows, error) {
 	if d.IsTrans() {
 		return d.dbTx.Query(query, args...)
+	}
+	if d.userMaster {
+		return d.Master().Query(query, args...)
 	}
 	return d.Slave().Query(query, args...)
 }
